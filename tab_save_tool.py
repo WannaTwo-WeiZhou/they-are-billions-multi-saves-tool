@@ -16,15 +16,25 @@ SAVE_PATH   = r"C:\Users\zw\Documents\My Games\They Are Billions"
 BACKUP_BASE = r"C:\Users\zw\Documents\My Games\They Are Billions BACKUPS"
 META_FILE   = os.path.join(BACKUP_BASE, "backup_meta.json")
 MAX_BACKUPS = 9
+UNKNOWN_TIME = "时间未知"
+COMMENT_PROMPT = "\n请输入存档注释（直接按 Enter 跳过）："
 
 
 # ── 元数据 I/O ────────────────────────────────────────────────────────────────
 def load_meta() -> dict:
-    """读取备份时间戳元数据，键为 '01'~'09'，值为时间字符串。"""
+    """读取备份元数据，键为 '01'~'09'，值为包含 'time' 和 'comment' 的字典。
+
+    兼容旧格式（值为纯时间字符串）：自动转换为新格式。
+    """
     if os.path.isfile(META_FILE):
         try:
             with open(META_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                raw = json.load(f)
+            # 兼容旧格式：值为纯字符串时，转换为新格式
+            for key, val in raw.items():
+                if isinstance(val, str):
+                    raw[key] = {"time": val, "comment": ""}
+            return raw
         except (json.JSONDecodeError, OSError):
             pass
     return {}
@@ -106,13 +116,21 @@ def add_save() -> None:
             if key_old in meta:
                 meta[key_new] = meta.pop(key_old)
 
+    # 询问用户是否添加注释
+    comment_input = read_line(COMMENT_PROMPT)
+    comment = (comment_input or "").strip()
+
     # 将当前游戏存档复制为 BACKUP-01
     dst01 = backup_path(1)
     print(f"  正在复制存档，请稍候...")
     shutil.copytree(SAVE_PATH, dst01)
-    meta["01"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    meta["01"] = {"time": timestamp, "comment": comment}
     save_meta(meta)
-    print(f"\n[成功] 存档已保存为 BACKUP-01（{meta['01']}）")
+    info = f"{timestamp}"
+    if comment:
+        info += f"  注释：{comment}"
+    print(f"\n[成功] 存档已保存为 BACKUP-01（{info}）")
 
 
 # ── 读取存档 ──────────────────────────────────────────────────────────────────
@@ -131,20 +149,29 @@ def load_save() -> None:
         p = backup_path(i)
         if os.path.isdir(p):
             key = f"{i:02d}"
-            timestamp = meta.get(key, "时间未知")
-            available.append((i, timestamp))
+            entry = meta.get(key, {})
+            if isinstance(entry, dict):
+                timestamp = entry.get("time", UNKNOWN_TIME)
+                comment   = entry.get("comment", "")
+            else:
+                timestamp = str(entry) if entry else UNKNOWN_TIME
+                comment   = ""
+            available.append((i, timestamp, comment))
 
     if not available:
         print("\n[提示] 尚无任何备份存档，请先使用「添加存档」功能。")
         return
 
     print("\n──── 可用存档列表 ────────────────────────────────")
-    for idx, (n, ts) in enumerate(available, start=1):
-        print(f"  {n}. BACKUP-{n:02d}  ({ts})")
+    for idx, (n, ts, cm) in enumerate(available, start=1):
+        line = f"  {n}. BACKUP-{n:02d}  ({ts})"
+        if cm:
+            line += f"  注释：{cm}"
+        print(line)
     print("──────────────────────────────────────────────────")
 
     # 获取用户选择
-    valid_nums = [n for n, _ in available]
+    valid_nums = [n for n, _, _ in available]
     while True:
         raw = read_line(f"\n请输入存档编号（{valid_nums[0]}~{valid_nums[-1]}），ESC 取消：")
         if raw is None:
@@ -157,9 +184,18 @@ def load_save() -> None:
 
     src = backup_path(choice)
     key = f"{choice:02d}"
-    ts  = meta.get(key, "时间未知")
+    entry = meta.get(key, {})
+    if isinstance(entry, dict):
+        ts = entry.get("time", UNKNOWN_TIME)
+        cm = entry.get("comment", "")
+    else:
+        ts = str(entry) if entry else UNKNOWN_TIME
+        cm = ""
 
-    print(f"\n  正在恢复 BACKUP-{choice:02d}（{ts}），请稍候...")
+    restore_info = f"{ts}"
+    if cm:
+        restore_info += f"  注释：{cm}"
+    print(f"\n  正在恢复 BACKUP-{choice:02d}（{restore_info}），请稍候...")
     # 先删除当前游戏存档，再复制所选备份
     shutil.rmtree(SAVE_PATH)
     shutil.copytree(src, SAVE_PATH)
