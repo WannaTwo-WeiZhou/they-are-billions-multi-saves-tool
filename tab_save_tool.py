@@ -88,6 +88,16 @@ def add_save() -> None:
     os.makedirs(BACKUP_BASE, exist_ok=True)
     meta = load_meta()
 
+    # 显示现有存档列表（含时间戳）
+    existing = [(i, meta.get(f"{i:02d}", "时间未知"))
+                for i in range(1, MAX_BACKUPS + 1)
+                if os.path.isdir(backup_path(i))]
+    if existing:
+        print("\n──── 当前存档列表 ────────────────────────────────")
+        for n, ts in existing:
+            print(f"  BACKUP-{n:02d}  ({ts})")
+        print("──────────────────────────────────────────────────")
+
     # 超出上限时删除最旧存档（BACKUP-09）
     oldest = backup_path(MAX_BACKUPS)
     if os.path.isdir(oldest):
