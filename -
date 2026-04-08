@@ -1,7 +1,0 @@
-feat: CLI 瑙嗚鍏ㄩ潰浼樺寲 v1.1
-
-- 鏂板 ANSI 棰滆壊鏀寔锛圵indows ctypes 寮€鍚級
-- 鏂板杈规甯冨眬锛圔OX_W=70锛宐ox_top/bottom/sep/line 绯诲垪鍑芥暟锛?- 鏂板绮剧‘缁堢瀹藉害璁＄畻锛坲nicodedata锛屾敮鎸?CJK/emoji锛?- 鏂板甯﹁繘搴︽潯鐨勭洰褰曞鍒讹紙鎸夋枃浠跺ぇ灏忥紝\r 鍘熷湴鍒锋柊锛?- 閲嶅啓涓昏彍鍗曪細杈规 + 褰╄壊 + 瀛樻。鏁伴噺缁熻
-- 閲嶅啓 add_save()锛氳繘搴︽潯 + 缁胯壊鎴愬姛妗?- 閲嶅啓 load_save()锛氬僵鑹叉娴嬫彁绀?+ 琛ㄦ牸鍒楄〃 + 杩涘害鏉?+ 鎴愬姛妗?
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
-
