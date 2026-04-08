@@ -37,3 +37,11 @@ Single-file Python script (`tab_save_tool.py`) — no packages or dependencies b
 - **Metadata backward-compat**: `load_meta()` silently upgrades old format (string value → `{"time": ..., "comment": ""}` dict). Any schema change must preserve this migration.
 - **Slot numbering**: always zero-padded two-digit strings (`"01"`–`"09"`) as JSON keys and `BACKUP-{n:02d}` as directory names.
 - **Path constants** (`SAVE_PATH`, `BACKUP_BASE`) are the only items a user needs to change; keep them at the top of the file with a clear comment.
+
+## Encoding requirements
+
+- **Source file**: `tab_save_tool.py` must be saved as **UTF-8 without BOM**. The `# -*- coding: utf-8 -*-` declaration on line 1 is mandatory.
+- **Terminal code page**: `tab_save_tool.bat` sets `chcp 65001` before launching Python so the Windows console accepts UTF-8 output.
+- **Runtime streams**: `_enable_ansi()` calls `stream.reconfigure(encoding="utf-8", errors="replace")` on `sys.stdout`, `sys.stderr`, and `sys.stdin` at startup. Do not remove this.
+- **subprocess calls**: always pass `encoding="utf-8", errors="replace"` to any `subprocess.run()` that uses `text=True`, to avoid relying on the system locale default (usually GBK on Chinese Windows).
+- **File I/O**: all `open()` calls must specify `encoding="utf-8"` explicitly.

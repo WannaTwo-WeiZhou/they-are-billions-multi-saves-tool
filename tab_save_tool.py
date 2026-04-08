@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 亿万僵尸 - 多存档工具
 They Are Billions - Multi-Save Tool
@@ -31,13 +32,18 @@ BOX_W    = 70   # 边框内容宽度（含左右各 1 个空格）
 
 # ── ANSI 支持 ─────────────────────────────────────────────────────────────────
 def _enable_ansi() -> None:
-    """开启 Windows 终端 ANSI 颜色支持。"""
+    """开启 Windows 终端 ANSI 颜色支持，并强制 stdout/stderr/stdin 使用 UTF-8。"""
     try:
         import ctypes
         k32 = ctypes.windll.kernel32
         k32.SetConsoleMode(k32.GetStdHandle(-11), 7)
     except Exception:
         pass
+    for stream in (sys.stdout, sys.stderr, sys.stdin):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 
 # ── 显示宽度计算 ──────────────────────────────────────────────────────────────
@@ -205,7 +211,7 @@ GAME_EXE = "TheyAreBillions.exe"
 def is_game_running() -> bool:
     result = subprocess.run(
         f'tasklist /FI "IMAGENAME eq {GAME_EXE}" /NH',
-        shell=True, capture_output=True, text=True
+        shell=True, capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
     return GAME_EXE.lower() in result.stdout.lower()
 

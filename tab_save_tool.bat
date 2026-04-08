@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 > nul
 python --version >nul 2>&1
 if %errorlevel% == 0 goto run
 
