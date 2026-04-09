@@ -231,10 +231,9 @@ def add_save() -> None:
     os.makedirs(BACKUP_BASE, exist_ok=True)
     meta = load_meta()
 
-    # 超出上限时删除最旧存档（BACKUP-09）
+    # 超出上限时静默删除最旧存档（BACKUP-09）
     oldest = backup_path(MAX_BACKUPS)
     if os.path.isdir(oldest):
-        print(f"\n  {C_YELLOW}已达 {MAX_BACKUPS} 个存档上限，删除最旧存档 BACKUP-{MAX_BACKUPS:02d}...{C_RESET}")
         shutil.rmtree(oldest)
         meta.pop(f"{MAX_BACKUPS:02d}", None)
 
