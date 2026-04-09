@@ -30,6 +30,9 @@ C_RED    = "\033[91m"
 C_YELLOW = "\033[93m"
 BOX_W    = 70   # 边框内容宽度（含左右各 1 个空格）
 
+# 上次操作描述（空字符串表示本次启动后尚未执行过操作）
+_last_op: str = ""
+
 # ── ANSI 支持 ─────────────────────────────────────────────────────────────────
 def _enable_ansi() -> None:
     """开启 Windows 终端 ANSI 颜色支持，并强制 stdout/stderr/stdin 使用 UTF-8。"""
@@ -96,6 +99,13 @@ def _box_raw_line(pre_colored: str, visible_dw: int) -> None:
     """打印含 ANSI 码的行；visible_dw 为去除 ANSI 后的可见显示宽度。"""
     pad = max(0, BOX_W - 2 - visible_dw)
     print(f"│ {pre_colored}{' ' * pad} │")
+
+
+def _wait_key(prompt: str = "按任意键返回主菜单...") -> None:
+    """显示灰色提示文字，等待用户按下任意键。"""
+    print(f"\n  {C_GRAY}{prompt}{C_RESET}", end="", flush=True)
+    msvcrt.getwch()
+    print()
 
 
 # ── 进度条 ────────────────────────────────────────────────────────────────────
@@ -258,6 +268,10 @@ def add_save() -> None:
         _box_line(f"     注释：{comment}", C_GRAY)
     _box_bottom()
 
+    global _last_op
+    _last_op = f"已保存 BACKUP-01  ({timestamp})"
+    _wait_key()
+
 
 # ── 读取存档 ──────────────────────────────────────────────────────────────────
 def load_save() -> None:
@@ -372,6 +386,10 @@ def load_save() -> None:
     _box_line("     现在可以启动游戏继续游玩。", C_GRAY)
     _box_bottom()
 
+    global _last_op
+    _last_op = f"已恢复 BACKUP-{choice:02d}  ({ts})"
+    _wait_key()
+
 
 # ── 主菜单 ────────────────────────────────────────────────────────────────────
 def main() -> None:
@@ -394,6 +412,9 @@ def main() -> None:
         _box_line(f"  📁 存档路径：{display_path}", C_GRAY)
         _box_line(f"  💾 当前备份：{existing} / {MAX_BACKUPS}", C_YELLOW)
         _box_sep()
+        if _last_op:
+            _box_line(f"  ✅ 上次操作：{_last_op}", C_GREEN)
+            _box_sep()
         _box_line()
         _box_line("    1  →  添加存档（备份当前游戏存档）")
         _box_line("    2  →  读取存档（恢复某个备份到游戏）")
