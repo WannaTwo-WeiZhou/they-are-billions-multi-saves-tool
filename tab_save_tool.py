@@ -32,6 +32,7 @@ BOX_W    = 70   # 边框内容宽度（含左右各 1 个空格）
 
 # 上次操作描述（空字符串表示本次启动后尚未执行过操作）
 _last_op: str = ""
+_last_op_color: str = ""
 
 # ── ANSI 支持 ─────────────────────────────────────────────────────────────────
 def _enable_ansi() -> None:
@@ -262,13 +263,14 @@ def add_save() -> None:
 
     print()
     _box_top()
-    _box_line(f"  ✅ 已保存为 BACKUP-01  ({timestamp})", C_GREEN)
+    _box_line(f"  💾 已保存为 BACKUP-01  ({timestamp})", C_GREEN)
     if comment:
         _box_line(f"     注释：{comment}", C_GRAY)
     _box_bottom()
 
-    global _last_op
-    _last_op = f"已保存 BACKUP-01  ({timestamp})"
+    global _last_op, _last_op_color
+    _last_op = f"💾 已保存 BACKUP-01  ({timestamp})"
+    _last_op_color = C_GREEN
     _wait_key()
 
 
@@ -378,15 +380,16 @@ def load_save() -> None:
 
     print()
     _box_top()
-    _box_line(f"  ✅ 已恢复 BACKUP-{choice:02d}  ({ts})", C_GREEN)
+    _box_line(f"  📂 已恢复 BACKUP-{choice:02d}  ({ts})", C_CYAN)
     if cm:
         _box_line(f"     注释：{cm}", C_GRAY)
     _box_sep()
     _box_line("     现在可以启动游戏继续游玩。", C_GRAY)
     _box_bottom()
 
-    global _last_op
-    _last_op = f"已恢复 BACKUP-{choice:02d}  ({ts})"
+    global _last_op, _last_op_color
+    _last_op = f"📂 已恢复 BACKUP-{choice:02d}  ({ts})"
+    _last_op_color = C_CYAN
     _wait_key()
 
 
@@ -412,7 +415,7 @@ def main() -> None:
         _box_line(f"  💾 当前备份：{existing} / {MAX_BACKUPS}", C_YELLOW)
         _box_sep()
         if _last_op:
-            _box_line(f"  ✅ 上次操作：{_last_op}", C_GREEN)
+            _box_line(f"  上次操作：{_last_op}", _last_op_color)
             _box_sep()
         _box_line()
         _box_line("    1  →  添加存档（备份当前游戏存档）")
