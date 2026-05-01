@@ -8,32 +8,32 @@ echo.
 
 :: ── 方式一：winget ──────────────────────────────────────────────────────────
 winget --version >nul 2>&1
-if %errorlevel% == 0 (
+if not errorlevel 1 (
     echo [方式1] 检测到 winget，尝试通过 winget 安装 Python...
-    winget install --id Python.Python.3 --silent --accept-package-agreements --accept-source-agreements
-    if %errorlevel% == 0 (
+    winget install --id Python.Python.3 --silent --accept-package-agreements --accept-source-agreements && (
         echo.
         echo [成功] Python 已通过 winget 安装完成，请关闭此窗口并重新运行 tab_save_tool.bat。
         pause
         exit /b 0
+    ) || (
+        echo [警告] winget 安装失败，尝试下一种方式...
+        echo.
     )
-    echo [警告] winget 安装失败，尝试下一种方式...
-    echo.
 )
 
 :: ── 方式二：Chocolatey (choco) ──────────────────────────────────────────────
 choco --version >nul 2>&1
-if %errorlevel% == 0 (
+if not errorlevel 1 (
     echo [方式2] 检测到 Chocolatey，尝试通过 choco 安装 Python...
-    choco install python --yes
-    if %errorlevel% == 0 (
+    choco install python --yes && (
         echo.
         echo [成功] Python 已通过 Chocolatey 安装完成，请关闭此窗口并重新运行 tab_save_tool.bat。
         pause
         exit /b 0
+    ) || (
+        echo [警告] Chocolatey 安装失败，尝试下一种方式...
+        echo.
     )
-    echo [警告] Chocolatey 安装失败，尝试下一种方式...
-    echo.
 )
 
 :: ── 方式三：PowerShell 直接从 python.org 下载安装包 ────────────────────────
