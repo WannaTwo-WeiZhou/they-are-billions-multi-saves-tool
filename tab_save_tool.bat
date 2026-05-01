@@ -45,13 +45,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 if exist "%_PY_INSTALLER%" (
     echo [提示] 正在静默安装，请稍候...
     "%_PY_INSTALLER%" /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1
+    if not errorlevel 1 (
+        del /f /q "%_PY_INSTALLER%" >nul 2>&1
+        echo.
+        echo [成功] Python 安装程序已执行完毕。
+        echo 请关闭此窗口并重新打开命令提示符后再运行 tab_save_tool.bat，
+        echo 以使 PATH 环境变量更新生效。
+        pause
+        exit /b 0
+    )
     del /f /q "%_PY_INSTALLER%" >nul 2>&1
+    echo [警告] Python 安装程序执行失败（可能是权限不足或安装被取消）。
     echo.
-    echo [成功] Python 安装程序已执行完毕。
-    echo 请关闭此窗口并重新打开命令提示符后再运行 tab_save_tool.bat，
-    echo 以使 PATH 环境变量更新生效。
-    pause
-    exit /b 0
 )
 
 :: ── 全部方式失败 ─────────────────────────────────────────────────────────────
