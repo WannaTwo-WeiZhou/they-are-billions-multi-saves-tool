@@ -14,7 +14,7 @@ import unicodedata
 from datetime import datetime
 
 # ── 路径常量 ──────────────────────────────────────────────────────────────────
-SAVE_PATH   = r"C:\Users\zw\Documents\My Games\They Are Billions"
+SAVE_PATH   = r"C:\Users\zw\Documents\My Games\They Are Billions\Saves"
 BACKUP_BASE = r"C:\Users\zw\Documents\My Games\They Are Billions BACKUPS"
 META_FILE   = os.path.join(BACKUP_BASE, "backup_meta.json")
 MAX_BACKUPS = 9
@@ -210,7 +210,7 @@ def read_line(prompt: str):
 # ── 检测游戏存档路径 ──────────────────────────────────────────────────────────
 def check_save_path() -> bool:
     if not os.path.isdir(SAVE_PATH):
-        print(f"\n{C_RED}[错误] 未找到游戏存档目录：{C_RESET}\n  {SAVE_PATH}")
+        print(f"\n{C_RED}[错误] 未找到游戏 Saves 目录：{C_RESET}\n  {SAVE_PATH}")
         print("请确认游戏已安装并至少运行过一次。")
         return False
     return True
