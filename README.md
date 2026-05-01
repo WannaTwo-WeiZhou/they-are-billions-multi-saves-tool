@@ -31,7 +31,7 @@
 
 | 路径 | 说明 |
 |------|------|
-| `C:\Users\<你的用户名>\Documents\My Games\They Are Billions` | 游戏存档目录 |
+| `C:\Users\<你的用户名>\Documents\My Games\They Are Billions\Saves` | 游戏 Saves 存档目录 |
 | `C:\Users\<你的用户名>\Documents\My Games\They Are Billions BACKUPS` | 备份存放目录 |
 
 > 如果你的 Windows 用户名不是 `zw`，请修改 `tab_save_tool.py` 顶部的 `SAVE_PATH` 和 `BACKUP_BASE` 路径。
