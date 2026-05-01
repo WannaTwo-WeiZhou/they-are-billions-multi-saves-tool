@@ -13,11 +13,15 @@
 
 ## 使用方法
 
-1. 确保已安装 Python 3
-2. 双击运行 `tab_save_tool.bat`，或直接运行：
+1. 双击运行 `tab_save_tool.bat`（推荐），或直接运行：
    ```
    python tab_save_tool.py
    ```
+2. 若未检测到 Python，`tab_save_tool.bat` 会按以下顺序自动尝试安装：
+   1. **winget**（Windows 程序包管理器，Windows 10/11 内置）
+   2. **Chocolatey**（`choco`，若已安装）
+   3. **PowerShell 直接下载**（从 python.org 下载安装包并静默安装，无需任何包管理器）
+   - 三种方式均失败时，会提示手动前往 <https://www.python.org/downloads/> 下载安装。
 3. 按菜单提示操作：
    - 按 `1` 备份当前存档
    - 按 `2` 恢复某个备份
